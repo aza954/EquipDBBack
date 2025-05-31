@@ -41,22 +41,24 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
             Authentication authentication = authenticationManager.authenticate(authToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
             HttpSession session = request.getSession(true);
             session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-            response.addCookie(createSessionCookie(session));
+
+            Cookie cookie = new Cookie("JSESSIONID", session.getId());
+            cookie.setPath("/");
+            cookie.setHttpOnly(true);
+            cookie.setMaxAge(60 * 60 * 24); // 24 часа
+            response.addCookie(cookie);
+
             return ResponseEntity.ok("Login successful");
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }
 
-    private Cookie createSessionCookie(HttpSession session) {
-            Cookie cookie = new Cookie("JSESSIONID", session.getId());
-            cookie.setPath("/");
-            cookie.setMaxAge(60 * 60 * 24);
-            return cookie;
 
-    }
+
 
     @Operation(summary = "Выход пользователя из системы", description = "Удаляет сессию пользователя и очищает контекст безопасности.")
     @ApiResponses({
