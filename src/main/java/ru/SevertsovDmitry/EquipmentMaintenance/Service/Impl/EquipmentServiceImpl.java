@@ -80,4 +80,9 @@ public class EquipmentServiceImpl implements EquipmentService {
                 ))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public void deleteEquipmentById(Long id) {
+        equipmentRepository.deleteById(id);
+    }
 }

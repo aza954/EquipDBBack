@@ -61,4 +61,14 @@ public class EquipmentController {
         List<EquipmentDTO> list = equipmentService.getAllEquipment();
         return ResponseEntity.ok(list);
     }
+
+    @Operation(summary = "Удалить оборудование по id", description = "Удаляет оборудование.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Оборудование удалено."),
+    })
+    @DeleteMapping("/{equipmentId}/delete")
+    public ResponseEntity deleteEquipment(@PathVariable Long equipmentId) {
+        equipmentService.deleteEquipmentById(equipmentId);
+        return (ResponseEntity) ResponseEntity.ok();
+    }
 }
