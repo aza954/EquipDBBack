@@ -49,7 +49,7 @@ public class IncidentController {
             @ApiResponse(responseCode = "200", description = "Список инцидентов получен."),
     })
     @GetMapping
-    public ResponseEntity<List<Incident>> getIncidentsByEquipment() {
+    public ResponseEntity<List<Incident>> getIncidents() {
         List<Incident> list = incidentService.getIncidents();
         return ResponseEntity.ok(list);
     }
