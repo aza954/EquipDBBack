@@ -74,4 +74,14 @@ public class AuthController {
         SecurityContextHolder.clearContext();
         return ResponseEntity.ok("Logout successful");
     }
+
+    @GetMapping("/validate")
+    public ResponseEntity<String> validateSession(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("SPRING_SECURITY_CONTEXT") != null) {
+            return ResponseEntity.ok("OK");
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not authenticated");
+    }
+
 }

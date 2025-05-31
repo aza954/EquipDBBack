@@ -4,11 +4,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.SevertsovDmitry.EquipmentMaintenance.Service.EquipmentService;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.DTO.EquipmentDTO;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Enum.EquipmentStatus;
+import ru.SevertsovDmitry.EquipmentMaintenance.models.Equipment;
+
 import java.util.List;
 
 @RestController
@@ -57,8 +60,8 @@ public class EquipmentController {
             @ApiResponse(responseCode = "200", description = "Список оборудования получен."),
     })
     @GetMapping("/all")
-    public ResponseEntity<List<EquipmentDTO>> getAllEquipment() {
-        List<EquipmentDTO> list = equipmentService.getAllEquipment();
+    public ResponseEntity<List<Equipment>> getAllEquipment() {
+        List<Equipment> list = equipmentService.getAllEquipment();
         return ResponseEntity.ok(list);
     }
 
@@ -67,8 +70,8 @@ public class EquipmentController {
             @ApiResponse(responseCode = "200", description = "Оборудование удалено."),
     })
     @DeleteMapping("/{equipmentId}/delete")
-    public ResponseEntity deleteEquipment(@PathVariable Long equipmentId) {
+    public HttpStatus deleteEquipment(@PathVariable Long equipmentId) {
         equipmentService.deleteEquipmentById(equipmentId);
-        return (ResponseEntity) ResponseEntity.ok();
+        return HttpStatus.OK;
     }
 }

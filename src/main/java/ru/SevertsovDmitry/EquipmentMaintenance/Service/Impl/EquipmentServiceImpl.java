@@ -69,16 +69,8 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public List<EquipmentDTO> getAllEquipment() {
-        return equipmentRepository.findAll().stream()
-                .map(equipment -> new EquipmentDTO(
-                        equipment.getName(),
-                        equipment.getPurchaseDate(),
-                        equipment.getType(),
-                        equipment.getStatus(),
-                        equipment.getStaff() != null ? equipment.getStaff().getStaffId() : null
-                ))
-                .collect(Collectors.toList());
+    public List<Equipment> getAllEquipment() {
+        return equipmentRepository.findAll();
     }
 
     @Override

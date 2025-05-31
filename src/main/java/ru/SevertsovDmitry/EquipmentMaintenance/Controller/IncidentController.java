@@ -4,11 +4,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.SevertsovDmitry.EquipmentMaintenance.Service.IncidentService;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.DTO.IncidentDTO;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Enum.IncidentStatus;
+import ru.SevertsovDmitry.EquipmentMaintenance.models.Incident;
+
 import java.util.List;
 
 @RestController
@@ -24,8 +27,8 @@ public class IncidentController {
             @ApiResponse(responseCode = "400", description = "Ошибка валидации.")
     })
     @PostMapping
-    public ResponseEntity<IncidentDTO> createIncident(@RequestBody IncidentDTO incidentDTO) {
-        IncidentDTO created = incidentService.createIncident(incidentDTO);
+    public ResponseEntity<Incident> createIncident(@RequestBody IncidentDTO incidentDTO) {
+        Incident created = incidentService.createIncident(incidentDTO);
         return ResponseEntity.ok(created);
     }
 
@@ -41,14 +44,23 @@ public class IncidentController {
         return ResponseEntity.ok(updated);
     }
 
-    @Operation(summary = "Получить список инцидентов по оборудованию", description = "Возвращает список всех инцидентов, связанных с указанным оборудованием.")
+    @Operation(summary = "Получить список всех инцидентов", description = "Возвращает список всех инцидентов, связанных с указанным оборудованием.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Список инцидентов получен."),
-            @ApiResponse(responseCode = "404", description = "Оборудование не найдено.")
     })
     @GetMapping
-    public ResponseEntity<List<IncidentDTO>> getIncidentsByEquipment(@RequestParam Long equipmentId) {
-        List<IncidentDTO> list = incidentService.getIncidentsByEquipment(equipmentId);
+    public ResponseEntity<List<Incident>> getIncidentsByEquipment() {
+        List<Incident> list = incidentService.getIncidents();
         return ResponseEntity.ok(list);
+    }
+
+    @Operation(summary = "Удалить инцидент по id", description = "Удаляет инцидент")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Инцидент удален."),
+    })
+    @DeleteMapping("/{id}")
+    public HttpStatus deleteIncident(@PathVariable Long id) {
+        incidentService.deleteIncident(id);
+        return HttpStatus.OK;
     }
 }
