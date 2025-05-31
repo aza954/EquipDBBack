@@ -1,6 +1,8 @@
 package ru.SevertsovDmitry.EquipmentMaintenance.Controller;
 
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +28,11 @@ public class RegistrationController {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Operation(summary = "Регистрация нового пользователя", description = "Создаёт нового пользователя в системе и назначает ему роль USER.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Пользователь успешно зарегистрирован."),
+            @ApiResponse(responseCode = "400", description = "Ошибка регистрации, пользователь уже существует.")
+    })
     @PostMapping
     public ResponseEntity<String> register(@RequestBody RegistrationRequest request) {
         if (staffRepository.findByName(request.getUsername()).isPresent()) {
@@ -49,4 +56,3 @@ public class RegistrationController {
         return ResponseEntity.ok("User registered successfully");
     }
 }
-

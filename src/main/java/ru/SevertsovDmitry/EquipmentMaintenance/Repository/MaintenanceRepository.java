@@ -8,5 +8,7 @@ import java.util.List;
 
 public interface MaintenanceRepository extends JpaRepository<Maintenance, Long> {
     List<Maintenance> findByType(MaintenanceType type);
+
+    List<Maintenance> findByEquipment_EquipmentId(Long equipmentId);
 }
 

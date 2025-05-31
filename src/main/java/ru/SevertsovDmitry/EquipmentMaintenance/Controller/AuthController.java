@@ -1,5 +1,9 @@
 package ru.SevertsovDmitry.EquipmentMaintenance.Controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -23,6 +27,11 @@ public class AuthController {
         this.authenticationManager = authenticationManager;
     }
 
+    @Operation(summary = "Авторизация пользователя", description = "Аутентифицирует пользователя по логину и паролю и устанавливает сессию.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Успешная авторизация."),
+            @ApiResponse(responseCode = "401", description = "Ошибка аутентификации, неверные данные.")
+    })
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest,
                                         HttpServletRequest request,
@@ -34,12 +43,26 @@ public class AuthController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             HttpSession session = request.getSession(true);
             session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+            response.addCookie(createSessionCookie(session));
             return ResponseEntity.ok("Login successful");
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }
 
+    private Cookie createSessionCookie(HttpSession session) {
+            Cookie cookie = new Cookie("JSESSIONID", session.getId());
+            cookie.setPath("/");
+            cookie.setMaxAge(60 * 60 * 24);
+            return cookie;
+
+    }
+
+    @Operation(summary = "Выход пользователя из системы", description = "Удаляет сессию пользователя и очищает контекст безопасности.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Успешный выход."),
+            @ApiResponse(responseCode = "401", description = "Пользователь не авторизован.")
+    })
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
@@ -50,4 +73,3 @@ public class AuthController {
         return ResponseEntity.ok("Logout successful");
     }
 }
-

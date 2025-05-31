@@ -8,7 +8,6 @@ import ru.SevertsovDmitry.EquipmentMaintenance.Service.EquipmentService;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.DTO.EquipmentDTO;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Enum.EquipmentStatus;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Equipment;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,16 +20,16 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Autowired
     private StaffRepository staffRepository;
 
+    @Override
     public EquipmentDTO createEquipment(EquipmentDTO equipmentDTO) {
         Equipment equipment = new Equipment();
         equipment.setName(equipmentDTO.getName());
         equipment.setPurchaseDate(equipmentDTO.getPurchaseDate());
         equipment.setType(equipmentDTO.getType());
         equipment.setStatus(equipmentDTO.getStatus());
-        equipment.setStaff(staffRepository.findById(equipmentDTO.getStaffId()).orElseThrow());
-
+        equipment.setStaff(staffRepository.findById(equipmentDTO.getStaffId())
+                .orElseThrow(() -> new RuntimeException("Staff not found with id: " + equipmentDTO.getStaffId())));
         equipment = equipmentRepository.save(equipment);
-
         return new EquipmentDTO(
                 equipment.getName(),
                 equipment.getPurchaseDate(),
@@ -40,6 +39,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         );
     }
 
+    @Override
     public List<EquipmentDTO> getEquipmentByStatus(EquipmentStatus status) {
         List<Equipment> equipmentList = equipmentRepository.findByStatus(status);
         return equipmentList.stream()
@@ -48,15 +48,17 @@ public class EquipmentServiceImpl implements EquipmentService {
                         equipment.getPurchaseDate(),
                         equipment.getType(),
                         equipment.getStatus(),
-                        equipment.getStaff() != null ? equipment.getStaff().getStaffId() : null))
+                        equipment.getStaff() != null ? equipment.getStaff().getStaffId() : null
+                ))
                 .collect(Collectors.toList());
     }
 
+    @Override
     public EquipmentDTO updateEquipmentStatus(Long equipmentId, EquipmentStatus status) {
-        Equipment equipment = equipmentRepository.findById(equipmentId).orElseThrow();
+        Equipment equipment = equipmentRepository.findById(equipmentId)
+                .orElseThrow(() -> new RuntimeException("Equipment not found with id: " + equipmentId));
         equipment.setStatus(status);
         equipment = equipmentRepository.save(equipment);
-
         return new EquipmentDTO(
                 equipment.getName(),
                 equipment.getPurchaseDate(),
@@ -65,7 +67,17 @@ public class EquipmentServiceImpl implements EquipmentService {
                 equipment.getStaff() != null ? equipment.getStaff().getStaffId() : null
         );
     }
+
+    @Override
+    public List<EquipmentDTO> getAllEquipment() {
+        return equipmentRepository.findAll().stream()
+                .map(equipment -> new EquipmentDTO(
+                        equipment.getName(),
+                        equipment.getPurchaseDate(),
+                        equipment.getType(),
+                        equipment.getStatus(),
+                        equipment.getStaff() != null ? equipment.getStaff().getStaffId() : null
+                ))
+                .collect(Collectors.toList());
+    }
 }
-
-
-
