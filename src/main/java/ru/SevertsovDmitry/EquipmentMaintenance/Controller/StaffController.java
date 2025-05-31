@@ -5,11 +5,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.SevertsovDmitry.EquipmentMaintenance.Service.StaffService;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.DTO.StaffDTO;
+import ru.SevertsovDmitry.EquipmentMaintenance.models.Staff;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/staff")
+@RequestMapping("/api/staff")
 public class StaffController {
 
     @Autowired
@@ -18,6 +19,11 @@ public class StaffController {
     @GetMapping("/role/{roleId}")
     public ResponseEntity<List<StaffDTO>> getStaffByRole(@PathVariable Long roleId) {
         return ResponseEntity.ok(staffService.getStaffByRole(roleId));
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<Staff>> getStaff() {
+        return ResponseEntity.ok(staffService.getStaff());
     }
 }
 

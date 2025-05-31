@@ -50,5 +50,10 @@ public class StaffServiceImpl implements StaffService {
                         staff.getContact()))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Staff> getStaff() {
+        return staffRepository.findAll();
+    }
 }
 

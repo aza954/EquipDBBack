@@ -1,5 +1,6 @@
 package ru.SevertsovDmitry.EquipmentMaintenance.models.DTO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class EquipmentDTO {
     private String name;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate purchaseDate;
     private EquipmentType type;
     private EquipmentStatus status;
