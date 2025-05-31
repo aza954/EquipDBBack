@@ -15,12 +15,6 @@ public class StaffController {
     @Autowired
     private StaffService staffService;
 
-    @PostMapping
-    public ResponseEntity<StaffDTO> createStaff(@RequestBody StaffDTO staffDTO) {
-        StaffDTO createdStaff = staffService.createStaff(staffDTO);
-        return ResponseEntity.ok(createdStaff);
-    }
-
     @GetMapping("/role/{roleId}")
     public ResponseEntity<List<StaffDTO>> getStaffByRole(@PathVariable Long roleId) {
         return ResponseEntity.ok(staffService.getStaffByRole(roleId));
