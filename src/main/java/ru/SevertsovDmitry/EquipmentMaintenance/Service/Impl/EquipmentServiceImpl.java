@@ -1,6 +1,9 @@
 package ru.SevertsovDmitry.EquipmentMaintenance.Service.Impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import ru.SevertsovDmitry.EquipmentMaintenance.Repository.EquipmentRepository;
 import ru.SevertsovDmitry.EquipmentMaintenance.Repository.StaffRepository;
@@ -12,6 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@CacheConfig(cacheNames = "equipmentCache")
 public class EquipmentServiceImpl implements EquipmentService {
 
     @Autowired
@@ -21,6 +25,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     private StaffRepository staffRepository;
 
     @Override
+    @CacheEvict(allEntries = true)
     public EquipmentDTO createEquipment(EquipmentDTO equipmentDTO) {
         Equipment equipment = new Equipment();
         equipment.setName(equipmentDTO.getName());
@@ -54,6 +59,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
+    @CacheEvict(allEntries = true)
     public EquipmentDTO updateEquipmentStatus(Long equipmentId, EquipmentStatus status) {
         Equipment equipment = equipmentRepository.findById(equipmentId)
                 .orElseThrow(() -> new RuntimeException("Equipment not found with id: " + equipmentId));
@@ -69,11 +75,14 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
+    @Cacheable
     public List<Equipment> getAllEquipment() {
-        return equipmentRepository.findAll();
+        List<Equipment> equipment = equipmentRepository.findAll();
+        return equipment;
     }
 
     @Override
+    @CacheEvict(allEntries = true)
     public void deleteEquipmentById(Long id) {
         equipmentRepository.deleteById(id);
     }

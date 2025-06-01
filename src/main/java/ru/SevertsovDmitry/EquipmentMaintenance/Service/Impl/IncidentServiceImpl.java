@@ -1,6 +1,9 @@
 package ru.SevertsovDmitry.EquipmentMaintenance.Service.Impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.SevertsovDmitry.EquipmentMaintenance.Repository.IncidentRepository;
@@ -13,9 +16,9 @@ import ru.SevertsovDmitry.EquipmentMaintenance.models.Equipment;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Incident;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Enum.EquipmentStatus;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@CacheConfig(cacheNames = "incidentCache")
 public class IncidentServiceImpl implements IncidentService {
 
     @Autowired
@@ -29,6 +32,7 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Override
     @Transactional
+    @CacheEvict(allEntries = true)
     public Incident createIncident(IncidentDTO incidentDTO) {
         Incident incident = new Incident();
         Equipment equipment = equipmentRepository.findById(incidentDTO.getEquipmentId())
@@ -38,6 +42,7 @@ public class IncidentServiceImpl implements IncidentService {
                 .orElseThrow(() -> new RuntimeException("Staff not found with id: " + incidentDTO.getStaffId())));
         incident.setDate(incidentDTO.getDate());
         incident.setStatus(incidentDTO.getStatus());
+
         if (incidentDTO.getStatus() == IncidentStatus.OPEN) {
             equipment.setStatus(EquipmentStatus.FAILED);
             equipmentRepository.save(equipment);
@@ -48,15 +53,18 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Override
     @Transactional
+    @CacheEvict(allEntries = true)
     public IncidentDTO updateIncidentStatus(Long incidentId, IncidentStatus status) {
         Incident incident = incidentRepository.findById(incidentId)
                 .orElseThrow(() -> new RuntimeException("Incident not found with id: " + incidentId));
         incident.setStatus(status);
+
         if (status == IncidentStatus.RESOLVED) {
             Equipment equipment = incident.getEquipment();
             equipment.setStatus(EquipmentStatus.ACTIVE);
             equipmentRepository.save(equipment);
         }
+
         incident = incidentRepository.save(incident);
         return new IncidentDTO(
                 incident.getEquipment().getEquipmentId(),
@@ -67,11 +75,13 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     @Override
+    @Cacheable
     public List<Incident> getIncidents() {
         return incidentRepository.findAll();
     }
 
     @Override
+    @CacheEvict(allEntries = true)
     public void deleteIncident(Long id) {
         incidentRepository.deleteById(id);
     }
