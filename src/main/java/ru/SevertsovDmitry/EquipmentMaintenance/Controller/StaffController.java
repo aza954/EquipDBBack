@@ -25,5 +25,15 @@ public class StaffController {
     public ResponseEntity<List<Staff>> getStaff() {
         return ResponseEntity.ok(staffService.getStaff());
     }
+
+    @GetMapping("/id/{id}")
+    public ResponseEntity<Staff> getStaffById(@PathVariable Long id) {
+        return ResponseEntity.ok(staffService.getStaffById(id));
+    }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<Staff> getStaffById(@PathVariable String username) {
+        return ResponseEntity.ok(staffService.getStaffByUsername(username));
+    }
 }
 

@@ -7,6 +7,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.hibernate.Session;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -15,16 +16,20 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import ru.SevertsovDmitry.EquipmentMaintenance.Service.StaffService;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.LoginRequest;
+import ru.SevertsovDmitry.EquipmentMaintenance.models.Staff;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
+    private final StaffService staffService;
 
-    public AuthController(AuthenticationManager authenticationManager) {
+    public AuthController(AuthenticationManager authenticationManager, StaffService staffService) {
         this.authenticationManager = authenticationManager;
+        this.staffService = staffService;
     }
 
     @Operation(summary = "Авторизация пользователя", description = "Аутентифицирует пользователя по логину и паролю и устанавливает сессию.")
@@ -36,6 +41,8 @@ public class AuthController {
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest,
                                         HttpServletRequest request,
                                         HttpServletResponse response) {
+        Staff staff = staffService.getStaffByUsername(loginRequest.getUsername());
+
         try {
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
@@ -44,18 +51,27 @@ public class AuthController {
 
             HttpSession session = request.getSession(true);
             session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+            session.setAttribute("USERID", staff.getStaffId());
 
-            Cookie cookie = new Cookie("JSESSIONID", session.getId());
-            cookie.setPath("/");
-            cookie.setHttpOnly(true);
-            cookie.setMaxAge(60 * 60 * 24); // 24 часа
-            response.addCookie(cookie);
+            Cookie sessionCookie = new Cookie("JSESSIONID", session.getId());
+            sessionCookie.setPath("/");
+            sessionCookie.setHttpOnly(true);
+            sessionCookie.setMaxAge(60 * 60 * 24); // 24 часа
+
+            Cookie userIdCookie = new Cookie("USERID", String.valueOf(staff.getStaffId()));
+            userIdCookie.setPath("/");
+            userIdCookie.setHttpOnly(false);
+            userIdCookie.setMaxAge(60 * 60 * 24);
+
+            response.addCookie(sessionCookie);
+            response.addCookie(userIdCookie);
 
             return ResponseEntity.ok("Login successful");
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }
+
 
 
 

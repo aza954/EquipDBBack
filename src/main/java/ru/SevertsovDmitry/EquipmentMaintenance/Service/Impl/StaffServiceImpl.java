@@ -55,5 +55,15 @@ public class StaffServiceImpl implements StaffService {
     public List<Staff> getStaff() {
         return staffRepository.findAll();
     }
+
+    @Override
+    public Staff getStaffById(Long id) {
+        return staffRepository.findById(id).orElseThrow(() -> new RuntimeException("Не найден"));
+    }
+
+    @Override
+    public Staff getStaffByUsername(String username) {
+        return staffRepository.findByName(username).orElseThrow(() -> new RuntimeException("Не найден"));
+    }
 }
 
