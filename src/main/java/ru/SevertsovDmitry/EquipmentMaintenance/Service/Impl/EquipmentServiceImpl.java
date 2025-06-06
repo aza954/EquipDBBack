@@ -25,7 +25,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     private StaffRepository staffRepository;
 
     @Override
-    @CacheEvict(allEntries = true)
+//    @CacheEvict(allEntries = true)
     public EquipmentDTO createEquipment(EquipmentDTO equipmentDTO) {
         Equipment equipment = new Equipment();
         equipment.setName(equipmentDTO.getName());
@@ -59,7 +59,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    @CacheEvict(allEntries = true)
+//    @CacheEvict(allEntries = true)
     public EquipmentDTO updateEquipmentStatus(Long equipmentId, EquipmentStatus status) {
         Equipment equipment = equipmentRepository.findById(equipmentId)
                 .orElseThrow(() -> new RuntimeException("Equipment not found with id: " + equipmentId));
@@ -75,14 +75,14 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    @Cacheable
+//    @Cacheable
     public List<Equipment> getAllEquipment() {
         List<Equipment> equipment = equipmentRepository.findAll();
         return equipment;
     }
 
     @Override
-    @CacheEvict(allEntries = true)
+//    @CacheEvict(allEntries = true)
     public void deleteEquipmentById(Long id) {
         equipmentRepository.deleteById(id);
     }

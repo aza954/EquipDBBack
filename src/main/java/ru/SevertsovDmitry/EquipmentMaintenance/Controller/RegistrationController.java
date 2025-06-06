@@ -50,6 +50,9 @@ public class RegistrationController {
         staff.setName(request.getUsername());
         staff.setPassword(passwordEncoder.encode(request.getPassword()));
         staff.setPosition(request.getContact() == null ? "Employee" : request.getPosition());
+        staff.setFirstName(request.getFirstName());
+        staff.setLastName(request.getLastName());
+        staff.setMiddleName(request.getMiddleName());
         staff.setContact(request.getContact() == null ? "NoContact" : request.getContact());
         staff.setRole(userRole);
         staffRepository.save(staff);

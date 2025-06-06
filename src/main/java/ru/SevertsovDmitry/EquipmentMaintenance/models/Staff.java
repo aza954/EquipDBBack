@@ -26,13 +26,13 @@ public class Staff implements UserDetails, Serializable {
     private String name;
 
     @Column(nullable = false)
-    private String first_name;
+    private String firstName;
 
     @Column(nullable = false)
-    private String middle_name;
+    private String middleName;
 
     @Column(nullable = false)
-    private String last_name;
+    private String lastName;
 
     @Column(nullable = false)
     private String position;

@@ -15,6 +15,8 @@ import ru.SevertsovDmitry.EquipmentMaintenance.models.Enum.IncidentStatus;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Equipment;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Incident;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Enum.EquipmentStatus;
+
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -32,7 +34,7 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Override
     @Transactional
-    @CacheEvict(allEntries = true)
+//    @CacheEvict(allEntries = true)
     public Incident createIncident(IncidentDTO incidentDTO) {
         Incident incident = new Incident();
         Equipment equipment = equipmentRepository.findById(incidentDTO.getEquipmentId())
@@ -53,7 +55,7 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Override
     @Transactional
-    @CacheEvict(allEntries = true)
+//    @CacheEvict(allEntries = true)
     public IncidentDTO updateIncidentStatus(Long incidentId, IncidentStatus status) {
         Incident incident = incidentRepository.findById(incidentId)
                 .orElseThrow(() -> new RuntimeException("Incident not found with id: " + incidentId));
@@ -75,7 +77,7 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     @Override
-    @Cacheable
+//    @Cacheable
     public List<Incident> getIncidents() {
         return incidentRepository.findAll();
     }
@@ -84,5 +86,10 @@ public class IncidentServiceImpl implements IncidentService {
     @CacheEvict(allEntries = true)
     public void deleteIncident(Long id) {
         incidentRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Incident> getIncidentsByPeriod(LocalDate startDate, LocalDate endDate) {
+        return incidentRepository.findByDateBetween(startDate, endDate);
     }
 }

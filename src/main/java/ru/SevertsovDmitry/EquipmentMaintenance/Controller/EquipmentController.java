@@ -4,15 +4,22 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.SevertsovDmitry.EquipmentMaintenance.Service.EquipmentService;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.DTO.EquipmentDTO;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Enum.EquipmentStatus;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Equipment;
+import ru.SevertsovDmitry.EquipmentMaintenance.models.Enum.EquipmentType;  // убедитесь, что импортирован ваш enum
 
+import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/equipment")
@@ -73,5 +80,45 @@ public class EquipmentController {
     public HttpStatus deleteEquipment(@PathVariable Long equipmentId) {
         equipmentService.deleteEquipmentById(equipmentId);
         return HttpStatus.OK;
+    }
+
+    // Новый endpoint для генерации отчёта по серверам (сетевым устройствам)
+    @Operation(summary = "Отчёт по серверам", description = "Генерирует текстовый отчёт по оборудованию типа SERVER с указанием их характеристик.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Отчёт успешно сгенерирован."),
+            @ApiResponse(responseCode = "400", description = "Ошибка валидации данных.")
+    })
+    @GetMapping("/report-servers")
+    public ResponseEntity<ByteArrayResource> generateServersReport() {
+        List<Equipment> allEquipment = equipmentService.getAllEquipment();
+
+        StringBuilder report = new StringBuilder();
+        report.append("Отчёт по серверам\n");
+        report.append("========================================\n\n");
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        for (Equipment equipment : allEquipment) {
+            report.append("ID: ").append(equipment.getEquipmentId()).append("\n");
+            report.append("Название: ").append(equipment.getName()).append("\n");
+            report.append("Дата покупки: ").append(equipment.getPurchaseDate().format(dtf)).append("\n");
+            report.append("Тип: ").append(equipment.getType()).append("\n");
+            report.append("Статус: ").append(equipment.getStatus()).append("\n");
+            report.append("Сотрудник: ").append(
+                    equipment.getStaff() != null ? equipment.getStaff().getName() : "Не назначен"
+            ).append("\n");
+            report.append("----------------------------------------\n");
+        }
+
+        byte[] data = report.toString().getBytes(StandardCharsets.UTF_8);
+        ByteArrayResource resource = new ByteArrayResource(data);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=servers_report.txt");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(data.length)
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(resource);
     }
 }
