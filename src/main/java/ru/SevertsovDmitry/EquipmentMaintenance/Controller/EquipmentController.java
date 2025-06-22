@@ -16,7 +16,6 @@ import ru.SevertsovDmitry.EquipmentMaintenance.models.Enum.EquipmentStatus;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Equipment;
 
 import java.nio.charset.StandardCharsets;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController

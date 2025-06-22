@@ -1,4 +1,4 @@
-package ru.SevertsovDmitry.EquipmentMaintenance.models;
+package ru.SevertsovDmitry.EquipmentMaintenance.models.DTO;
 
 import lombok.Data;
 

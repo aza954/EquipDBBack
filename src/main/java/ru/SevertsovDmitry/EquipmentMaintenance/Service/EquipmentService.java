@@ -1,7 +1,6 @@
 package ru.SevertsovDmitry.EquipmentMaintenance.Service;
 
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.ResponseEntity;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.DTO.EquipmentDTO;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Enum.EquipmentStatus;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Equipment;

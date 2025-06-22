@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.SevertsovDmitry.EquipmentMaintenance.Repository.RoleRepository;
 import ru.SevertsovDmitry.EquipmentMaintenance.Repository.StaffRepository;
-import ru.SevertsovDmitry.EquipmentMaintenance.models.RegistrationRequest;
+import ru.SevertsovDmitry.EquipmentMaintenance.models.DTO.RegistrationRequest;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Role;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Staff;
 
