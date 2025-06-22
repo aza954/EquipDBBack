@@ -1,7 +1,7 @@
 package ru.SevertsovDmitry.EquipmentMaintenance.models;
 
-import lombok.Data;
 import jakarta.persistence.*;
+import lombok.Data;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Enum.IncidentStatus;
 
 import java.io.Serial;

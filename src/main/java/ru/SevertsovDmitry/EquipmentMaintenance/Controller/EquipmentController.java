@@ -14,12 +14,10 @@ import ru.SevertsovDmitry.EquipmentMaintenance.Service.EquipmentService;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.DTO.EquipmentDTO;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Enum.EquipmentStatus;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Equipment;
-import ru.SevertsovDmitry.EquipmentMaintenance.models.Enum.EquipmentType;  // убедитесь, что импортирован ваш enum
 
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/equipment")
@@ -82,7 +80,6 @@ public class EquipmentController {
         return HttpStatus.OK;
     }
 
-    // Новый endpoint для генерации отчёта по серверам (сетевым устройствам)
     @Operation(summary = "Отчёт по серверам", description = "Генерирует текстовый отчёт по оборудованию типа SERVER с указанием их характеристик.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Отчёт успешно сгенерирован."),
@@ -90,28 +87,9 @@ public class EquipmentController {
     })
     @GetMapping("/report-servers")
     public ResponseEntity<ByteArrayResource> generateServersReport() {
-        List<Equipment> allEquipment = equipmentService.getAllEquipment();
+        ByteArrayResource resource = equipmentService.generateServersReport();
 
-        StringBuilder report = new StringBuilder();
-        report.append("Отчёт по серверам\n");
-        report.append("========================================\n\n");
-
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        for (Equipment equipment : allEquipment) {
-            report.append("ID: ").append(equipment.getEquipmentId()).append("\n");
-            report.append("Название: ").append(equipment.getName()).append("\n");
-            report.append("Дата покупки: ").append(equipment.getPurchaseDate().format(dtf)).append("\n");
-            report.append("Тип: ").append(equipment.getType()).append("\n");
-            report.append("Статус: ").append(equipment.getStatus()).append("\n");
-            report.append("Сотрудник: ").append(
-                    equipment.getStaff() != null ? equipment.getStaff().getName() : "Не назначен"
-            ).append("\n");
-            report.append("----------------------------------------\n");
-        }
-
-        byte[] data = report.toString().getBytes(StandardCharsets.UTF_8);
-        ByteArrayResource resource = new ByteArrayResource(data);
-
+        byte[] data = resource.toString().getBytes(StandardCharsets.UTF_8);
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=servers_report.txt");
 

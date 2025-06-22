@@ -4,10 +4,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.SevertsovDmitry.EquipmentMaintenance.Service.MaintenanceService;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.DTO.MaintenanceDTO;
+import ru.SevertsovDmitry.EquipmentMaintenance.models.Maintenance;
+
 import java.util.List;
 
 @RestController
@@ -40,14 +43,36 @@ public class MaintenanceController {
         return ResponseEntity.ok(updated);
     }
 
-    @Operation(summary = "Получить список обслуживаний по оборудованию", description = "Возвращает список всех записей об обслуживании оборудования.")
+    @Operation(summary = "Удалить запись об обслуживание", description = "Удаление обслуживания.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Обслуживание удалено."),
+            @ApiResponse(responseCode = "404", description = "Оборудование не найдено.")
+    })
+    @DeleteMapping("/{maintenanceId}")
+    public HttpStatus deleteMaintenanceById(@PathVariable Long maintenanceId) {
+        maintenanceService.deleteMainenceById(maintenanceId);
+        return HttpStatus.OK;
+    }
+
+    @Operation(summary = "Получить список всех обслуживаний", description = "Возвращает список всех записей об обслуживании оборудования.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Список обслуживаний получен."),
             @ApiResponse(responseCode = "404", description = "Оборудование не найдено.")
     })
     @GetMapping
-    public ResponseEntity<List<MaintenanceDTO>> getMaintenanceByEquipment(@RequestParam Long equipmentId) {
-        List<MaintenanceDTO> list = maintenanceService.getMaintenanceByEquipment(equipmentId);
+    public ResponseEntity<List<Maintenance>> getAllMaintenance() {
+        List<Maintenance> list = maintenanceService.getAllMaintenance();
         return ResponseEntity.ok(list);
     }
+
+//    @Operation(summary = "Получить список обслуживаний по оборудованию", description = "Возвращает список всех записей об обслуживании оборудования.")
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "200", description = "Список обслуживаний получен."),
+//            @ApiResponse(responseCode = "404", description = "Оборудование не найдено.")
+//    })
+//    @GetMapping
+//    public ResponseEntity<List<MaintenanceDTO>> getMaintenanceByEquipment(@RequestParam Long equipmentId) {
+//        List<MaintenanceDTO> list = maintenanceService.getMaintenanceByEquipment(equipmentId);
+//        return ResponseEntity.ok(list);
+//    }
 }

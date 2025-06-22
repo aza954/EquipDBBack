@@ -4,7 +4,6 @@ import ru.SevertsovDmitry.EquipmentMaintenance.models.DTO.StaffDTO;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Staff;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface StaffService {
     StaffDTO createStaff(StaffDTO staffDTO);

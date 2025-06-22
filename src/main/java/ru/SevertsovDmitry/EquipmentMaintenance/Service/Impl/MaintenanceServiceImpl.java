@@ -3,17 +3,19 @@ package ru.SevertsovDmitry.EquipmentMaintenance.Service.Impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.SevertsovDmitry.EquipmentMaintenance.Repository.MaintenanceRepository;
 import ru.SevertsovDmitry.EquipmentMaintenance.Repository.EquipmentRepository;
+import ru.SevertsovDmitry.EquipmentMaintenance.Repository.MaintenanceRepository;
 import ru.SevertsovDmitry.EquipmentMaintenance.Repository.StaffRepository;
 import ru.SevertsovDmitry.EquipmentMaintenance.Service.MaintenanceService;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.DTO.MaintenanceDTO;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Equipment;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Maintenance;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class MaintenanceServiceImpl implements MaintenanceService {
 
     @Autowired
@@ -80,5 +82,16 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                         maintenance.getType()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Maintenance> getAllMaintenance() {
+        return maintenanceRepository.findAll();
+    }
+
+    @Override
+    @Transactional
+    public void deleteMainenceById(Long maintenanceId) {
+        maintenanceRepository.deleteById(maintenanceId);
     }
 }

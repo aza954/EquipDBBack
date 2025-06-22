@@ -5,7 +5,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.SevertsovDmitry.EquipmentMaintenance.Repository.RoleRepository;
 import ru.SevertsovDmitry.EquipmentMaintenance.Repository.StaffRepository;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.RegistrationRequest;
@@ -38,7 +41,7 @@ public class RegistrationController {
         if (staffRepository.findByName(request.getUsername()).isPresent()) {
             return ResponseEntity.badRequest().body("User already exists");
         }
-        Role userRole = roleRepository.findByRoleName("USER")
+        Role userRole = roleRepository.findByRoleName("ADMIN")
                 .orElseGet(() -> {
                     Role newRole = new Role();
                     newRole.setRoleName("USER");

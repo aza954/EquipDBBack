@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -82,34 +81,9 @@ public class IncidentController {
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        // Получаем инциденты за указанный период,
-        // предполагается, что в IncidentService реализован метод getIncidentsByPeriod
-        List<Incident> incidents = incidentService.getIncidentsByPeriod(startDate, endDate);
+        ByteArrayResource resource = incidentService.generateReportByPeriod(startDate, endDate);
 
-        // Формирование отчёта
-        StringBuilder report = new StringBuilder();
-        report.append("Отчёт по инцидентам с ")
-                .append(startDate.toString())
-                .append(" по ")
-                .append(endDate.toString())
-                .append("\n=====================================================\n\n");
-
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        for (Incident incident : incidents) {
-            report.append("ID инцидента: ").append(incident.getIncidentId()).append("\n");
-            report.append("Дата: ").append(incident.getDate().format(dtf)).append("\n");
-            report.append("Статус: ").append(incident.getStatus().name()).append("\n");
-            report.append("Оборудование: ")
-                    .append(incident.getEquipment() != null ? incident.getEquipment().getName() : "Не указано")
-                    .append("\n");
-            report.append("Сотрудник: ")
-                    .append(incident.getStaff() != null ? incident.getStaff().getName() : "Не указан")
-                    .append("\n");
-            report.append("--------------------------------------\n");
-        }
-
-        byte[] data = report.toString().getBytes(StandardCharsets.UTF_8);
-        ByteArrayResource resource = new ByteArrayResource(data);
+        byte[] data = resource.toString().getBytes(StandardCharsets.UTF_8);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=incidents_report_"
