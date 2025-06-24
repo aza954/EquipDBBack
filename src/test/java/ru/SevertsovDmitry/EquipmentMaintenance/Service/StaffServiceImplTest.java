@@ -47,10 +47,8 @@ class StaffServiceImplTest {
         when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
         when(staffRepository.save(any(Staff.class))).thenReturn(savedStaff);
 
-        // Вызов метода
         StaffDTO result = staffService.createStaff(inputDTO);
 
-        // Проверки
         assertNotNull(result);
         assertEquals("John Doe", result.getName());
         assertEquals(1L, result.getRoleId());
@@ -80,7 +78,6 @@ class StaffServiceImplTest {
 
     @Test
     void getStaff_ShouldReturnAllStaff() {
-        // Подготовка данных
         Staff staff = new Staff();
         staff.setName("Test User");
         List<Staff> staffList = Collections.singletonList(staff);
@@ -89,7 +86,6 @@ class StaffServiceImplTest {
 
         List<Staff> result = staffService.getStaff();
 
-        // Проверки
         assertFalse(result.isEmpty());
         assertEquals(1, result.size());
         assertEquals("Test User", result.get(0).getName());
@@ -97,7 +93,6 @@ class StaffServiceImplTest {
 
     @Test
     void getStaffById_ShouldReturnStaff() {
-        // Подготовка данных
         Staff staff = new Staff();
         staff.setStaffId(1L);
         staff.setName("Test User");

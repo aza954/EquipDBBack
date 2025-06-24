@@ -51,7 +51,6 @@ public class IncidentServiceImpl implements IncidentService {
         incident.setDate(incidentDTO.getDate());
         incident.setStatus(incidentDTO.getStatus());
 
-        // Если инцидент открыт, меняем статус оборудования
         if (incidentDTO.getStatus() == IncidentStatus.OPEN) {
             equipment.setStatus(EquipmentStatus.FAILED);
             equipmentRepository.save(equipment);
@@ -103,11 +102,8 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Override
     public ByteArrayResource generateReportByPeriod(LocalDate startDate, LocalDate endDate) {
-        // Получаем инциденты за указанный период,
-        // предполагается, что в IncidentService реализован метод getIncidentsByPeriod
         List<Incident> incidents = getIncidentsByPeriod(startDate, endDate);
 
-        // Формирование отчёта
         StringBuilder report = new StringBuilder();
         report.append("Отчёт по инцидентам с ")
                 .append(startDate.toString())

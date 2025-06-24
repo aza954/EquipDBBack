@@ -39,7 +39,6 @@ class EquipmentServiceImplTest {
 
     @Test
     void createEquipment_ShouldReturnEquipmentDTO() {
-        // Подготовка данных
         EquipmentDTO inputDTO = new EquipmentDTO("Server", LocalDate.now(), EquipmentType.SERVER, EquipmentStatus.ACTIVE, 1L);
         Staff staff = new Staff();
         staff.setStaffId(1L);
@@ -67,10 +66,8 @@ class EquipmentServiceImplTest {
 
         when(equipmentRepository.findByStatus(EquipmentStatus.ACTIVE)).thenReturn(equipmentList);
 
-        // Вызов метода
         List<EquipmentDTO> result = equipmentService.getEquipmentByStatus(EquipmentStatus.ACTIVE);
 
-        // Проверки
         assertFalse(result.isEmpty());
         assertEquals(1, result.size());
         assertEquals(EquipmentStatus.ACTIVE, result.get(0).getStatus());
@@ -116,16 +113,13 @@ class EquipmentServiceImplTest {
 
     @Test
     void deleteEquipmentById_ShouldCallDelete() {
-        // Вызов метода
         equipmentService.deleteEquipmentById(1L);
 
-        // Проверка
         verify(equipmentRepository, times(1)).deleteById(1L);
     }
 
     @Test
     void generateServersReport_ShouldReturnResource() {
-        // Подготовка данных
         Equipment equipment = new Equipment();
         equipment.setEquipmentId(1L);
         equipment.setName("Server-01");
@@ -153,7 +147,6 @@ class EquipmentServiceImplTest {
 
     @Test
     void createEquipment_StaffNotFound_ShouldThrowException() {
-        // Подготовка данных
         EquipmentDTO inputDTO = new EquipmentDTO("Server", LocalDate.now(), EquipmentType.SERVER, EquipmentStatus.ACTIVE, 999L);
 
         when(staffRepository.findById(999L)).thenReturn(Optional.empty());
