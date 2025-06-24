@@ -11,6 +11,8 @@ import ru.SevertsovDmitry.EquipmentMaintenance.Service.EquipmentService;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.DTO.EquipmentDTO;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Enum.EquipmentStatus;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Equipment;
+import ru.SevertsovDmitry.EquipmentMaintenance.util.Exception.EquipmentNotFoundException;
+import ru.SevertsovDmitry.EquipmentMaintenance.util.Exception.StaffNotFoundException;
 
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
@@ -30,7 +32,6 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     @Transactional
-//    @CacheEvict(allEntries = true)
     public EquipmentDTO createEquipment(EquipmentDTO equipmentDTO) {
         Equipment equipment = new Equipment();
         equipment.setName(equipmentDTO.getName());
@@ -38,7 +39,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         equipment.setType(equipmentDTO.getType());
         equipment.setStatus(equipmentDTO.getStatus());
         equipment.setStaff(staffRepository.findById(equipmentDTO.getStaffId())
-                .orElseThrow(() -> new RuntimeException("Staff not found with id: " + equipmentDTO.getStaffId())));
+                .orElseThrow(() -> new StaffNotFoundException("Staff not found with id: " + equipmentDTO.getStaffId())));
         equipment = equipmentRepository.save(equipment);
         return new EquipmentDTO(
                 equipment.getName(),
@@ -65,10 +66,9 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     @Transactional
-//    @CacheEvict(allEntries = true)
     public EquipmentDTO updateEquipmentStatus(Long equipmentId, EquipmentStatus status) {
         Equipment equipment = equipmentRepository.findById(equipmentId)
-                .orElseThrow(() -> new RuntimeException("Equipment not found with id: " + equipmentId));
+                .orElseThrow(() -> new EquipmentNotFoundException("Equipment not found with id: " + equipmentId));
         equipment.setStatus(status);
         equipment = equipmentRepository.save(equipment);
         return new EquipmentDTO(
@@ -79,6 +79,7 @@ public class EquipmentServiceImpl implements EquipmentService {
                 equipment.getStaff() != null ? equipment.getStaff().getStaffId() : null
         );
     }
+
 
     @Override
 //    @Cacheable

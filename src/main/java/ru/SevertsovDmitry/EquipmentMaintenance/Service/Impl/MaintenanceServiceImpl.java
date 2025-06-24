@@ -10,6 +10,9 @@ import ru.SevertsovDmitry.EquipmentMaintenance.Service.MaintenanceService;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.DTO.MaintenanceDTO;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Equipment;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Maintenance;
+import ru.SevertsovDmitry.EquipmentMaintenance.util.Exception.EquipmentNotFoundException;
+import ru.SevertsovDmitry.EquipmentMaintenance.util.Exception.MaintenanceNotFoundException;
+import ru.SevertsovDmitry.EquipmentMaintenance.util.Exception.StaffNotFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,14 +35,13 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     public MaintenanceDTO createMaintenance(MaintenanceDTO maintenanceDTO) {
         Maintenance maintenance = new Maintenance();
         Equipment equipment = equipmentRepository.findById(maintenanceDTO.getEquipmentId())
-                .orElseThrow(() -> new RuntimeException("Equipment not found with id: " + maintenanceDTO.getEquipmentId()));
+                .orElseThrow(() -> new EquipmentNotFoundException("Equipment not found with id: " + maintenanceDTO.getEquipmentId()));
         maintenance.setEquipment(equipment);
         maintenance.setStaff(staffRepository.findById(maintenanceDTO.getStaffId())
-                .orElseThrow(() -> new RuntimeException("Staff not found with id: " + maintenanceDTO.getStaffId())));
+                .orElseThrow(() -> new StaffNotFoundException("Staff not found with id: " + maintenanceDTO.getStaffId())));
         maintenance.setDate(maintenanceDTO.getDate());
         maintenance.setDescription(maintenanceDTO.getDescription());
         maintenance.setType(maintenanceDTO.getType());
-        // Бизнес-логика: при создании обслуживания оборудования переводим статус оборудования в MAINTENANCE
         equipment.setStatus(ru.SevertsovDmitry.EquipmentMaintenance.models.Enum.EquipmentStatus.MAINTENANCE);
         equipmentRepository.save(equipment);
         maintenance = maintenanceRepository.save(maintenance);
@@ -56,7 +58,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     @Transactional
     public MaintenanceDTO updateMaintenance(Long maintenanceId, MaintenanceDTO maintenanceDTO) {
         Maintenance maintenance = maintenanceRepository.findById(maintenanceId)
-                .orElseThrow(() -> new RuntimeException("Maintenance record not found with id: " + maintenanceId));
+                .orElseThrow(() -> new MaintenanceNotFoundException("Maintenance record not found with id: " + maintenanceId));
         maintenance.setDate(maintenanceDTO.getDate());
         maintenance.setDescription(maintenanceDTO.getDescription());
         maintenance.setType(maintenanceDTO.getType());

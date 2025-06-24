@@ -16,6 +16,9 @@ import ru.SevertsovDmitry.EquipmentMaintenance.models.Enum.EquipmentStatus;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Enum.IncidentStatus;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Equipment;
 import ru.SevertsovDmitry.EquipmentMaintenance.models.Incident;
+import ru.SevertsovDmitry.EquipmentMaintenance.util.Exception.EquipmentNotFoundException;
+import ru.SevertsovDmitry.EquipmentMaintenance.util.Exception.IncidentNotFoundException;
+import ru.SevertsovDmitry.EquipmentMaintenance.util.Exception.StaffNotFoundException;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -38,17 +41,17 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Override
     @Transactional
-//    @CacheEvict(allEntries = true)
     public Incident createIncident(IncidentDTO incidentDTO) {
         Incident incident = new Incident();
         Equipment equipment = equipmentRepository.findById(incidentDTO.getEquipmentId())
-                .orElseThrow(() -> new RuntimeException("Equipment not found with id: " + incidentDTO.getEquipmentId()));
+                .orElseThrow(() -> new EquipmentNotFoundException("Equipment not found with id: " + incidentDTO.getEquipmentId()));
         incident.setEquipment(equipment);
         incident.setStaff(staffRepository.findById(incidentDTO.getStaffId())
-                .orElseThrow(() -> new RuntimeException("Staff not found with id: " + incidentDTO.getStaffId())));
+                .orElseThrow(() -> new StaffNotFoundException("Staff not found with id: " + incidentDTO.getStaffId())));
         incident.setDate(incidentDTO.getDate());
         incident.setStatus(incidentDTO.getStatus());
 
+        // Если инцидент открыт, меняем статус оборудования
         if (incidentDTO.getStatus() == IncidentStatus.OPEN) {
             equipment.setStatus(EquipmentStatus.FAILED);
             equipmentRepository.save(equipment);
@@ -59,10 +62,9 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Override
     @Transactional
-//    @CacheEvict(allEntries = true)
     public IncidentDTO updateIncidentStatus(Long incidentId, IncidentStatus status) {
         Incident incident = incidentRepository.findById(incidentId)
-                .orElseThrow(() -> new RuntimeException("Incident not found with id: " + incidentId));
+                .orElseThrow(() -> new IncidentNotFoundException("Incident not found with id: " + incidentId));
         incident.setStatus(status);
 
         if (status == IncidentStatus.RESOLVED) {
@@ -79,6 +81,7 @@ public class IncidentServiceImpl implements IncidentService {
                 incident.getStatus()
         );
     }
+
 
     @Override
 //    @Cacheable
